@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/* ===== 自定义主题配置（柔和疗愈色调） ===== */
+@theme {
+  /* primary: 淡蓝色系 */
+  --color-primary: #A8D5E2;
+  --color-primary-light: #89CFF0;
+  --color-primary-dark: #7BB8CC;
+
+  /* secondary: 淡紫色系 */
+  --color-secondary: #C8B6E2;
+  --color-secondary-light: #B19CD9;
+  --color-secondary-dark: #A899CC;
+
+  /* accent: 浅绿色系 */
+  --color-accent: #B8E6D5;
+  --color-accent-light: #9FD8C4;
+  --color-accent-dark: #8FCCA8;
+
+  /* neutral: 米白色系 */
+  --color-neutral: #F5F1E8;
+  --color-neutral-light: #FAF8F3;
+  --color-neutral-dark: #E8E4D9;
+
+  /* 文字颜色 */
+  --color-text-primary: #4A5568;
+  --color-text-secondary: #718096;
+  --color-text-muted: #A0AEC0;
+
+  /* 字体 */
+  --font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+
+  /* 圆角 */
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+}
+
+/* ===== 全局样式 ===== */
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background: linear-gradient(135deg, #FAF8F3 0%, #F0EDE5 50%, #E8F4F0 100%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+
+/* ===== 消息气泡入场动画 ===== */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
