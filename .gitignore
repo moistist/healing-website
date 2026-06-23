@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+.venv/
+env/
+ENV/
+.env.local
+.env.*.local
+
+# 数据库
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+backend/data/*.db
+backend/data/*.db-journal
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node / 前端
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+.pnp.*
+.yarn-integrity
+
+# 前端构建输出
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.cache/
+
+# 测试覆盖率
+.coverage
+coverage/
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+*.cover
+.hypothesis/
+
+# 日志
+*.log
+logs/
+
+# 操作系统
+Thumbs.db
+
+# 临时文件
+tmp/
+temp/
+.tmp/
+
+# 项目专属
+backend/.env
+screenshots/
+*.pyc
+data/
+screenshots/
+*.pyc
