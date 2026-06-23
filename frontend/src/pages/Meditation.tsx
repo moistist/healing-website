@@ -201,14 +201,6 @@ export default function Meditation() {
     setActiveGuideIndex(null)
   }, [])
 
-  // 计算呼吸圆圈动画的缩放比例
-  const getBreathScale = () => {
-    if (breathPhase === 'inhale') return 'scale-100'
-    if (breathPhase === 'hold') return 'scale-100'
-    if (breathPhase === 'exhale') return 'scale-50'
-    return 'scale-75'
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">

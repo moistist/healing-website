@@ -82,7 +82,8 @@ def get_emotion_trends(
     since = datetime.utcnow() - timedelta(days=days)
 
     # SQL 聚合：按日期 + 情绪类型统计次数
-    date_col = cast(EmotionRecord.timestamp, Date).label("date")
+    # 注意：SQLite 没有原生 Date 类型，用 strftime 在 Python 端做日期截断
+    date_col = func.strftime("%Y-%m-%d", EmotionRecord.timestamp).label("date")
     rows = (
         db.query(
             date_col,
@@ -108,10 +109,10 @@ def get_emotion_trends(
     emotion_types: set[str] = {row.emotion_type for row in rows}
 
     # 构建 {emotion_type: {date: count}} 映射
+    # strftime 返回的就是 "YYYY-MM-DD" 字符串，可直接当 key 用
     counts: dict[str, dict[str, int]] = {et: {} for et in emotion_types}
     for row in rows:
-        date_str = row.date.isoformat()
-        counts[row.emotion_type][date_str] = row.cnt
+        counts[row.emotion_type][row.date] = row.cnt
 
     # 按日期序列生成每个情绪类型的数组
     emotions: dict[str, list[int]] = {

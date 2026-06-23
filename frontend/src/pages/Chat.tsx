@@ -15,7 +15,6 @@ export default function Chat() {
   // ===== 状态管理 =====
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
   const [initialLoading, setInitialLoading] = useState(true)

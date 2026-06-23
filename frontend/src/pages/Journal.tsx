@@ -9,9 +9,15 @@ interface JournalEntry {
   id: number
   title: string
   content: string
-  mood?: string
-  created_at: string
-  updated_at: string
+  mood?: string | null
+  timestamp: string
+}
+
+interface JournalListResponse {
+  journals: JournalEntry[]
+  total: number
+  page: number
+  page_size: number
 }
 
 // 预设心情标签
@@ -106,18 +112,16 @@ export default function Journal() {
 
       const res = await fetch(`${API_BASE}?${params}`)
       if (!res.ok) throw new Error('Failed to fetch')
-      const data = await res.json()
+      const data: JournalListResponse = await res.json()
 
-      const items: JournalEntry[] = data.items || data.entries || data || []
-      const total = data.total || items.length
+      const items: JournalEntry[] = data.journals || []
+      const total: number = data.total ?? items.length
 
-      if (append) {
-        setEntries(prev => [...prev, ...items])
-      } else {
-        setEntries(items)
-      }
+      setEntries(prev => (append ? [...prev, ...items] : items))
       setTotalEntries(total)
-      setHasMore(entries.length + items.length < total || items.length >= 10)
+      // 计算是否还有更多：累计已加载数 < 总数
+      const newCount = (append ? entries.length : 0) + items.length
+      setHasMore(newCount < total)
     } catch {
       // 静默处理
     } finally {
@@ -194,7 +198,7 @@ export default function Journal() {
 
   // 按日期分组
   const groupedEntries = entries.reduce<Record<string, JournalEntry[]>>((acc, entry) => {
-    const group = getDateGroup(entry.created_at)
+    const group = getDateGroup(entry.timestamp)
     if (!acc[group]) acc[group] = []
     acc[group].push(entry)
     return acc
@@ -301,7 +305,7 @@ export default function Journal() {
             <div>
               <h2 className="text-2xl font-semibold text-text-primary mb-2">{selectedEntry.title}</h2>
               <div className="flex items-center gap-3 text-sm text-text-secondary">
-                <span>{formatTime(selectedEntry.created_at)}</span>
+                <span>{formatTime(selectedEntry.timestamp)}</span>
                 {selectedEntry.mood && (
                   <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getMoodColor(selectedEntry.mood)}`}>
                     {getMoodEmoji(selectedEntry.mood)} {selectedEntry.mood}
@@ -443,7 +447,7 @@ function JournalCard({ entry, onClick, onDelete }: {
       <p className="text-text-secondary text-sm leading-relaxed line-clamp-2 mb-3">
         {preview}
       </p>
-      <p className="text-text-muted text-xs">{formatTime(entry.created_at)}</p>
+      <p className="text-text-muted text-xs">{formatTime(entry.timestamp)}</p>
     </div>
   )
 }

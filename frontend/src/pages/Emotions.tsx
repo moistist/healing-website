@@ -6,7 +6,19 @@ interface EmotionRecord {
   id: number
   emotion_type: string
   description: string | null
-  created_at: string
+  timestamp: string
+}
+
+interface EmotionListResponse {
+  emotions: EmotionRecord[]
+  total: number
+  page: number
+  page_size: number
+}
+
+interface EmotionTrendsResponse {
+  dates: string[]
+  emotions: Record<string, number[]>
 }
 
 interface EmotionTrend {
@@ -95,9 +107,10 @@ export default function Emotions() {
     try {
       const res = await fetch(`${API_BASE}/api/emotions?page=${page}&page_size=10`)
       if (!res.ok) throw new Error('加载失败')
-      const data: EmotionRecord[] = await res.json()
-      if (data.length < 10) setHasMore(false)
-      setHistory((prev) => (append ? [...prev, ...data] : data))
+      const data: EmotionListResponse = await res.json()
+      const items = data.emotions || []
+      if (items.length < 10) setHasMore(false)
+      setHistory((prev) => (append ? [...prev, ...items] : items))
     } catch {
       // 静默处理
     } finally {
@@ -111,8 +124,22 @@ export default function Emotions() {
     try {
       const res = await fetch(`${API_BASE}/api/emotions/trends?days=7`)
       if (!res.ok) throw new Error('加载失败')
-      const data: EmotionTrend[] = await res.json()
-      setTrends(data)
+      const data: EmotionTrendsResponse = await res.json()
+      // 将后端 {dates, emotions: {key: [count,...]}} 转换为前端
+      // 期望的 [{date, emotions: {key: count}}, ...] 格式
+      const dates = data.dates || []
+      const emotionMap = data.emotions || {}
+      const converted: EmotionTrend[] = dates.map((date, idx) => {
+        const dayEmotions: Record<string, number> = {}
+        for (const [key, arr] of Object.entries(emotionMap)) {
+          const v = arr?.[idx]
+          if (typeof v === 'number' && v > 0) {
+            dayEmotions[key] = v
+          }
+        }
+        return { date, emotions: dayEmotions }
+      })
+      setTrends(converted)
     } catch {
       // 静默处理
     } finally {
@@ -181,12 +208,6 @@ export default function Emotions() {
   // ===== 收集趋势中所有出现的情绪类型 =====
   const allTrendEmotions = Array.from(
     new Set(trends.flatMap((t) => Object.keys(t.emotions)))
-  )
-
-  // ===== 计算趋势柱状图最大值 =====
-  const maxTrendCount = Math.max(
-    1,
-    ...trends.flatMap((t) => Object.values(t.emotions))
   )
 
   return (
@@ -347,7 +368,6 @@ export default function Emotions() {
               <div className="flex items-end gap-2 min-w-[400px] h-48 px-2">
                 {trends.map((day) => {
                   const total = Object.values(day.emotions).reduce((a, b) => a + b, 0)
-                  const barHeight = total > 0 ? (total / maxTrendCount) * 100 : 0
                   const dateLabel = day.date.slice(5) // MM-DD
                   return (
                     <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
@@ -447,7 +467,7 @@ export default function Emotions() {
                     </div>
                     {/* 时间 */}
                     <span className="text-xs text-text-muted whitespace-nowrap shrink-0">
-                      {formatTime(record.created_at)}
+                      {formatTime(record.timestamp)}
                     </span>
                   </div>
                 </div>
