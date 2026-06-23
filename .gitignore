@@ -77,5 +77,6 @@ backend/.env
 screenshots/
 *.pyc
 data/
-screenshots/
-*.pyc
+
+# Trae IDE 内部文件
+.trae/
